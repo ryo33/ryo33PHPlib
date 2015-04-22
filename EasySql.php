@@ -37,6 +37,14 @@ class EasySql{
         $this->debug = $debug;
     }
 
+    function beginTransaction(){
+        $this->pdo->beginTransaction();
+    }
+
+    function commit(){
+        $this->pdo->commit();
+    }
+
     function fetch($sql, $arg=null){
         try{
             return $this->prepare($sql, $arg)->fetch($this->fetch_mode);
