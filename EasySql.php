@@ -15,6 +15,9 @@ class EasySql{
     }
 
     function prepare($sql, $arg=null, $exec=false){
+        if(substr_count($sql, ';') > 1){
+            return true;
+        }
         if($this->debug){
             error_log($sql);
         }
@@ -71,16 +74,10 @@ class EasySql{
     }
 
     function select($table, $columns, $where){
-        if($this->check_table_name($table)){
-            return null;
-        }
         return 'SELECT ' . $columns . ' FROM `' . $table . '` WHERE ' . implode(' AND ', array_map(function($a){return '`' . $a . '` = ?';}, $where));
     }
 
     function insert($table, $pairs, $last_insert_id=false){
-        if($this->check_table_name($table)){
-            return null;
-        }
         foreach($pairs as $key => $value){
             $columns[] = $key;
             $values[] = $value;
@@ -97,17 +94,7 @@ class EasySql{
         }
     } 
 
-    function check_table_name($name){
-        if(strpos($name, '`') !== false or strpos($name, ';') !== false){
-            return true;
-        }
-        return false;
-    }
-
-    function update($table, $id, $pairs){
-        if($this->check_table_name($table)){
-            return null;
-        }
+    function update($table, $where, $pairs){
         foreach($pairs as $key => $value){
             $columns[] = $key;
             $values[] = $value;
@@ -117,9 +104,6 @@ class EasySql{
     }
 
     function get_count($table, $where){
-        if($this->check_table_name($table)){
-            return null;
-        }
         $where1 = [];
         $where2 = [];
         foreach($where as $key=>$item){
