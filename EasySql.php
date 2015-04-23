@@ -8,10 +8,14 @@ class EasySql{
     function __construct($dsn, $user, $password, $fetch_mode=PDO::FETCH_ASSOC, $utf=true){
         $this->pdo = new PDO($dsn, $user, $password);
         $this->fetch_mode = $fetch_mode;
-        $this->pdo->setAttribute(PDO::ATTR_ERRORMODE, PDO::ERRMODE_EXCEPTION);
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         if($utf){
             $this->pdo->exec('SET NAMES utf8');
         }
+    }
+
+    function exec($sql){
+        $this->pdo->exec($sql);
     }
 
     function prepare($sql, $arg=null, $exec=false){
@@ -94,13 +98,13 @@ class EasySql{
         }
     } 
 
-    function update($table, $where, $pairs){
+    function update($table, $pairs, $where, $where_values=[]){
         foreach($pairs as $key => $value){
             $columns[] = $key;
             $values[] = $value;
         }
-        $values[] = $id;
-        $this->execute('UPDATE `' . $table . '` SET ' . implode(', ', array_map(function($a){return '`' . $a . '` = ?';}, $columns)) . ' WHERE `id` = BINARY ?', $values);
+        $where = strlen($where) ? ' WHERE ' . $where : '';
+        $this->execute('UPDATE `' . $table . '` SET ' . implode(', ', array_map(function($a){return '`' . $a . '` = ?';}, $columns)) . $where, array_merge($values, $where_values));
     }
 
     function get_count($table, $where){
