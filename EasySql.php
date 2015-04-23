@@ -76,9 +76,13 @@ class EasySql{
         return 'SELECT ' . $columns . ' FROM `' . $table . '` WHERE ' . implode(' AND ', array_map(function($a){return '`' . $a . '` = ?';}, $where));
     }
 
-    function insert($table, $columns, $values, $last_insert_id=false){
+    function insert($table, $pairs, $last_insert_id=false){
         if($this->check_table_name($table)){
             return null;
+        }
+        foreach($pairs as $key => $value){
+            $columns[] = $key;
+            $values[] = $value;
         }
         if(!is_array($columns)){
             $columns = array($columns);
