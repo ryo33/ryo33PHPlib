@@ -8,6 +8,7 @@ class EasySql{
     function __construct($dsn, $user, $password, $fetch_mode=PDO::FETCH_ASSOC, $utf=true){
         $this->pdo = new PDO($dsn, $user, $password);
         $this->fetch_mode = $fetch_mode;
+        $this->pdo->setAttribute(PDO::ATTR_ERRORMODE, PDO::ERRMODE_EXCEPTION);
         if($utf){
             $this->pdo->exec('SET NAMES utf8');
         }
