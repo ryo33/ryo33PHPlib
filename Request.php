@@ -7,7 +7,7 @@ class Request{
 
     private $params;
 
-    function __construct(){
+    function __construct($URL = false){
         global $_SERVER, $_GET, $_POST;
         $uri = $_SERVER['REQUEST_URI'];
         if(($pos = strpos($uri, '?')) !== false){
@@ -15,6 +15,9 @@ class Request{
         }
         $this->uris = explode('/', trim($uri, '/'));
         $this->uris = array_map('urldecode', $this->uris);
+        if($URL !== false){
+            $this->uris = array_slice($this->uris, count(explode('/', rtrim(preg_replace('/^https?:\/\//', '', $URL), '/'))) - 1);
+        }
         $this->uri_position = 0;
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
             $this->request_method = self::POST;
