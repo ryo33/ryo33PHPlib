@@ -114,7 +114,7 @@ class EasySql{
             $where1[] = $key;
             $where2[] = $item;
         }
-        return $this->fetchColumn($this->select($table, 'COUNT(`id`)', $where1), $where2);
+        return (int)$this->fetchColumn($this->select($table, 'COUNT(`id`)', $where1), $where2);
     }
 
 }

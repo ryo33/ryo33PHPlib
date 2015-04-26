@@ -1,5 +1,9 @@
 <?php
 
+$_ = function($a){
+    return $a;
+};
+
 function str_to_datetime($str, $timezone=null){
     global $DATETIMEZONE;
     if($timezone === null){
@@ -63,16 +67,8 @@ function check_numeric($text, $length=false, $max=false, $min=0){
     return true;
 }
 
-function _($a){
-    return $a;
-}
-
-$_ = function($a){
-    return $a;
-};
-
 function h($text){
-    return htmlspecialchars($text, ENT_QUOTES, 'EUC-JP');
+    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 }
 
 function stremp($text){
@@ -107,14 +103,6 @@ function echoh($text){
     echo h($text);
 }
 
-function redirect($url=''){
-    if(DEBUG){
-        error_log('redirect' . $url);
-    }
-    header('Location: ' . URL . $url);
-    exit();
-}
-
 function redirect_uri($url=''){
     if(DEBUG){
         error_log('redirect' . $url);
@@ -133,7 +121,7 @@ function get_token($form_name){
     if(! is_array($tokens)){
         $tokens = [];
     }
-    $tokens[] = $token = sha256($form_name . session_id() . microtime() . 'BOSE');
+    $tokens[] = $token = sha256($form_name . session_id() . microtime());
     $_SESSION[$key] = $tokens;
     return $token;
 }
@@ -147,7 +135,7 @@ function check_token($form_name, $token){
         $_SESSION[$key] = $tokens;
         return false;
     }
-    redirect();
+    return true;
 }
 
 function sha256($target) {
