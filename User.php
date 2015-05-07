@@ -58,7 +58,7 @@ class User{
         $this->session->set(self::$LOGIN, false);
         $this->session->regenerate();
         $this->is_login = false;
-        $this->user_id = $user_id;
+        $this->user_id = null;
         $this->cookie->remove(self::$AUTO_LOGIN);
         foreach($this->logout_functions as $function){
             $function();
