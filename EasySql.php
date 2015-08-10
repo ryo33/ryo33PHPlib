@@ -94,7 +94,7 @@ class EasySql{
         }
         $this->execute('INSERT INTO `' . $table . '`(`' . implode('`, `', $columns) . '`)VALUES(' . str_repeat('?,', count($columns) - 1) . '?)', $values);
         if($last_insert_id){
-            return $this->pdo->lastInsertId();
+            return $this->pdo->lastInsertId();//guaranteed in concurrently access
         }
     } 
 

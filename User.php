@@ -12,20 +12,25 @@ class User{
     private $cookie;
     public $is_login = false;
     public $user_id = null;
+    public $AUTO_LOGIN_KEY_LENGTH = 16;
+
+    private $create_auto_login_key;
 
     private $login_functions = [];
     private $logout_functions = [];
 
-    function __construct($session, $cookie, $check_user_id, $auto_login){
+    function __construct($session, $cookie, $destination, $check_user_id, $auto_login, $create_auto_login_key){
         $this->session = $session;
         $this->cookie = $cookie;
-        $tmp = $this->session->get(self::$LOGIN, false) ? $this->session->get(self::$USER_ID, false) : false;
+        $this->destination = $destination;
+        $this->create_auto_login_key = $create_auto_login_key;
+        $tmp = $this->session->get($this->destination . self::$LOGIN, false) ? $this->session->get($this->destination . self::$USER_ID, false) : false;
         if($tmp !== false && $check_user_id($tmp)){
             $this->is_login = true;
             $this->user_id = $tmp;
         }else{
             $this->is_login = false;
-            $key = $this->cookie->get(self::$AUTO_LOGIN);
+            $key = $this->cookie->get($this->destination . self::$AUTO_LOGIN);
             if($key !== null){
                 $id = $auto_login($key);
                 if($id !== null){
@@ -44,8 +49,8 @@ class User{
     }
 
     function login($user_id){
-        $this->session->set(self::$LOGIN, true);
-        $this->session->set(self::$USER_ID, $user_id);
+        $this->session->set($this->destination . self::$LOGIN, true);
+        $this->session->set($this->destination . self::$USER_ID, $user_id);
         $this->is_login = true;
         $this->user_id = $user_id;
         $this->session->regenerate();
@@ -55,11 +60,11 @@ class User{
     }
 
     function logout(){
-        $this->session->set(self::$LOGIN, false);
+        $this->session->set($this->destination . self::$LOGIN, false);
         $this->session->regenerate();
         $this->is_login = false;
         $this->user_id = null;
-        $this->cookie->remove(self::$AUTO_LOGIN);
+        $this->cookie->remove($this->destination . self::$AUTO_LOGIN);
         foreach($this->logout_functions as $function){
             $function();
         }
@@ -67,7 +72,8 @@ class User{
 
     function enable_auto_login(){
         if($this->is_login){
-            $this->cookie->set(self::$AUTO_LOGIN, $this->create_auto_login_key());
+            $func = $this->create_auto_login_key;
+            $this->cookie->set($this->destination . self::$AUTO_LOGIN, $func());
         }
     }
 
