@@ -30,11 +30,13 @@ class User{
             $this->user_id = $tmp;
         }else{
             $this->is_login = false;
+            $user_id = $this->cookie->get($this->destination . self::$USER_ID);
             $key = $this->cookie->get($this->destination . self::$AUTO_LOGIN);
-            if($key !== null){
-                $id = $auto_login($key);
-                if($id !== null){
-                    $this->login($id);
+            if($user_id !== null && $key !== null){
+                $result = $auto_login($user_id, $key);
+                if($result !== null){
+                    $this->login($user_id);
+                    $this->set_auto_login($this->user_id, $result);
                 }
             }
         }
@@ -70,10 +72,15 @@ class User{
         }
     }
 
+    function set_auto_login($user_id, $key){
+        $this->cookie->set($this->destination . self::$AUTO_LOGIN, $key);
+        $this->cookie->set($this->destination . self::$USER_ID, $user_id);
+    }
+
     function enable_auto_login(){
         if($this->is_login){
             $func = $this->create_auto_login_key;
-            $this->cookie->set($this->destination . self::$AUTO_LOGIN, $func());
+            $this->set_auto_login($this->user_id, $func($this->user_id));
         }
     }
 

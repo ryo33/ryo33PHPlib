@@ -104,9 +104,6 @@ function echoh($text){
 }
 
 function redirect_uri($url=''){
-    if(DEBUG){
-        error_log('redirect' . $url);
-    }
     header('Location: ' . $url);
     exit();
 }

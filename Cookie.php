@@ -7,7 +7,7 @@ class Cookie{
     }
 
     function set($name, $value){
-        setcookie($name, $value);
+        setcookie($name, $value, time() + 3600 * 24 * 30);
     }
 
     function remove($name){
